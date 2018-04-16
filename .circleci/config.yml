@@ -19,4 +19,24 @@ jobs:
       # run tests!
       - run: docker run example npm test
 
+  deploy:
+    docker:
+      # specify the version you desire here
+      - image: docker:17.05.0-ce-git
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          command:  sh deployments/qa.sh
 
+workflows:
+      version: 2
+      build-deploy:
+        jobs:
+          - qa
+          - deploy:
+              requires:
+                - build
+              filters:
+                branches:
+                  only: /feature_.*/
